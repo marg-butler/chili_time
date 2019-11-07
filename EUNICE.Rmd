@@ -1,0 +1,81 @@
+---
+title: "CHILDREN NAMES"
+author: "Margaret Butler"
+date: "11/7/2019"
+output: html_document
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+
+library(babynames)
+library(tidyverse)
+
+babynames %>% 
+  distinct(year) %>% 
+  count()
+
+babynames %>% 
+  distinct(name) %>% 
+  count()
+
+```
+
+```{r}
+
+common <- babynames %>% 
+  group_by(name) %>% 
+  summarise(sum = sum(n)) %>% 
+  arrange(desc(sum))
+
+male_count <- babynames %>% 
+  filter(sex == "M") %>% 
+  group_by(sex) %>%
+  summarise(sum = sum(n)) %>% 
+  arrange(desc(sum))
+
+```
+
+
+```{r}
+
+eunice <- babynames %>% 
+  filter(name == "Eunice", sex == "M") %>% 
+  ggplot(aes(x = year, y = prop)) +
+    geom_point()
+
+eunice
+
+male_eunice <- babynames %>% 
+  filter(name == "Eunice", sex == "M")
+
+```
+
+```{r}
+
+male_by_year <- babynames %>% 
+  filter(sex == "M") %>% 
+  group_by(name) %>% 
+  summarize(total = n()) %>% 
+  filter(total == 138) %>% 
+  pluck("name")
+
+```
+
+```{r}
+
+eugene_year <- babynames %>% 
+  filter(name == "Eugene", sex == "F")
+
+```
+
+babynames %>% 
+  filter(name %in% male_by_year) %>% 
+  filter(sex == "M") %>% 
+  group_by(name) %>% 
+  nest() %>% 
+  mutate(models = map(data, ~ lm(prop ~ year, data = .x))) %>% 
+  mutate(coefficients = map(models, ~coef(.x))) %>% 
+  mutate(mutate)
+
+
